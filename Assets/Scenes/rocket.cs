@@ -56,7 +56,7 @@ public class rocket : MonoBehaviour
                 break;
             default:               
                 StartDeathSequence();
-                //Destroy(gameObject);
+                //Destroy(gameObject, 1f);
                 break;
 
         }

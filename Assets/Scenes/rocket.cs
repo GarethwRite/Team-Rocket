@@ -8,9 +8,15 @@ public class rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip deathExpolsion;
     [SerializeField] AudioClip nextLevel;
+
+    [SerializeField] ParticleSystem mainEngineParticles;
+    [SerializeField] ParticleSystem nextLevelParticles;
+    [SerializeField] ParticleSystem DeathExpolsionParticles;
+   
 
     Rigidbody rigidBody;
     AudioSource audioSource;
@@ -49,7 +55,8 @@ public class rocket : MonoBehaviour
                 StartNextLevelSequence();              
                 break;
             default:               
-                StartDeathSequence();              
+                StartDeathSequence();
+                //Destroy(gameObject);
                 break;
 
         }
@@ -60,13 +67,15 @@ public class rocket : MonoBehaviour
         state = State.Transending;
         audioSource.Stop();
         audioSource.PlayOneShot(nextLevel);
+        nextLevelParticles.Play();
         Invoke("LoadNextLevel", 1f);
     }
     private void StartDeathSequence()
     {
         state = State.Dying;
-        audioSource.Stop();
+        audioSource.Stop();       
         audioSource.PlayOneShot(deathExpolsion);
+        DeathExpolsionParticles.Play();      
         Invoke("LoadFirstLevel", 2f);
     }
 
@@ -105,20 +114,24 @@ public class rocket : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            ApplyThrust();
+            ApplyThrust();          
         }
+        
         else
         {
             audioSource.Stop();
+            mainEngineParticles.Stop();
         }
     }
 
     private void ApplyThrust()
     {
-        rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+        rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
         if (!audioSource.isPlaying)
         {
             audioSource.PlayOneShot(mainEngine);
+            mainEngineParticles.Play();
         }
+        
     }
 }
